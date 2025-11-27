@@ -22,6 +22,25 @@
       rel="stylesheet"
     />
 
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Luxor's Group",
+      "description": "Desenvolvedores Full-Stack especializados em criar experiências digitais excepcionais",
+      "url": "https://seusite.com",
+      "logo": "https://seusite.com/logo.png",
+      "founders": [
+        {"@type": "Person", "name": "Arthur"},
+        {"@type": "Person", "name": "André"}, 
+        {"@type": "Person", "name": "Pedro Henrique"}
+      ],
+      "foundingDate": "2025",
+      "knowsAbout": ["HTML5", "CSS3", "JavaScript", "Figma", "UI/UX Design", "Cybersecurity"]
+    }
+    </script>
+
     <style>
       /* ═══════════════════════════════════════════════════════════════
            CSS RESET & BASE STYLES
@@ -90,8 +109,8 @@
 
         /* Transitions */
         --transition-fast: 150ms ease-in-out;
-        --transition-base: 300ms ease-in-out;
-        --transition-slow: 500ms ease-in-out;
+        --transition-base: 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        --transition-slow: 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
         /* Shadows */
         --shadow-sm: 0 2px 8px rgba(18, 19, 16, 0.1);
@@ -137,6 +156,19 @@
         line-height: 1.6;
         overflow-x: hidden;
         position: relative;
+        transition: background-color 0.5s ease, color 0.5s ease;
+      }
+
+      /* Reduced motion support */
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
       }
 
       ::selection {
@@ -160,6 +192,30 @@
 
       ::-webkit-scrollbar-thumb:hover {
         background: var(--primary-light);
+      }
+
+      /* Focus styles for accessibility */
+      :focus {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+      }
+
+      /* Skip link for accessibility */
+      .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 6px;
+        background: var(--primary);
+        color: white;
+        padding: 8px;
+        text-decoration: none;
+        border-radius: var(--radius-sm);
+        z-index: 10000;
+        transition: top 0.3s ease;
+      }
+
+      .skip-link:focus {
+        top: 6px;
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -219,6 +275,8 @@
         font-size: 0.95rem;
         position: relative;
         transition: var(--transition-base);
+        padding: var(--space-xs) var(--space-sm);
+        border-radius: var(--radius-sm);
       }
 
       .nav-links a::after {
@@ -232,11 +290,14 @@
         transition: var(--transition-base);
       }
 
-      .nav-links a:hover {
+      .nav-links a:hover,
+      .nav-links a.active {
         color: var(--text-primary);
+        background: var(--surface);
       }
 
-      .nav-links a:hover::after {
+      .nav-links a:hover::after,
+      .nav-links a.active::after {
         width: 100%;
       }
 
@@ -464,6 +525,25 @@
         box-shadow: 0 8px 30px rgba(149, 170, 97, 0.6);
       }
 
+      /* Ripple effect for buttons */
+      .btn-primary::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.3s, height 0.3s;
+      }
+
+      .btn-primary:active::after {
+        width: 300px;
+        height: 300px;
+      }
+
       .btn-secondary {
         background: transparent;
         color: var(--text-primary);
@@ -680,7 +760,7 @@
         border: 1px solid var(--border);
         border-radius: var(--radius-xl);
         overflow: hidden;
-        transition: var(--transition-base);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: pointer;
         position: relative;
       }
@@ -692,8 +772,8 @@
       }
 
       .project-card:hover {
-        transform: translateY(-8px);
-        box-shadow: var(--shadow-lg);
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         border-color: var(--primary);
       }
 
@@ -811,6 +891,36 @@
         padding: var(--space-xs) var(--space-md);
         font-size: 0.9rem;
         border-radius: var(--radius-sm);
+      }
+
+      /* Loading skeleton for projects */
+      .project-skeleton {
+        background: var(--surface);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        animation: pulse 2s infinite;
+      }
+
+      .skeleton-image {
+        height: 250px;
+        background: var(--border);
+      }
+
+      .skeleton-text {
+        height: 20px;
+        background: var(--border);
+        margin: var(--space-md);
+        border-radius: var(--radius-sm);
+      }
+
+      .skeleton-text.short {
+        width: 60%;
+      }
+
+      @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
       }
 
       /* ═══════════════════════════════════════════════════════════════
@@ -1049,6 +1159,7 @@
 
       .form-group {
         margin-bottom: var(--space-lg);
+        position: relative;
       }
 
       .form-group label {
@@ -1236,7 +1347,8 @@
       .reveal {
         opacity: 0;
         transform: translateY(30px);
-        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                    transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       }
 
       .reveal.active {
@@ -1382,6 +1494,9 @@
     </style>
   </head>
   <body>
+    <!-- Skip link for accessibility -->
+    <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+
     <!-- Scroll Progress Bar -->
     <div class="scroll-progress" id="scrollProgress"></div>
 
@@ -1476,384 +1591,399 @@
       </div>
     </section>
 
-    <!-- About Section -->
-    <section class="section" id="about">
-      <div class="section-header reveal">
-        <h2 class="section-title">Sobre Nós</h2>
-        <p class="section-subtitle">
-          Três desenvolvedores apaixonados por criar experiências digitais
-          incríveis
-        </p>
-      </div>
-
-      <div class="about-grid">
-        <div class="about-card reveal">
-          <img
-            src="./assets/arthur.jpg"
-            alt="Arthur"
-            class="about-avatar"
-            width="120"
-            height="120"
-          />
-          <h3 class="about-name">Arthur</h3>
-          <p class="about-role">Full-Stack Developer • 15 anos</p>
-          <p class="about-bio">
-            Domino desenvolvimento web com foco em criar soluções escaláveis e
-            performáticas. Apaixonado
-            por resolver problemas complexos através da programação.
+    <!-- Main Content -->
+    <main id="main-content">
+      <!-- About Section -->
+      <section class="section" id="about">
+        <div class="section-header reveal">
+          <h2 class="section-title">Sobre Nós</h2>
+          <p class="section-subtitle">
+            Três desenvolvedores apaixonados por criar experiências digitais
+            incríveis
           </p>
-
-          <div class="skill-tags">
-            <span class="skill-tag">HTML5</span>
-            <span class="skill-tag">CSS3</span>
-            <span class="skill-tag">After Effects</span>
-            <span class="skill-tag">Shell</span>
-            <span class="skill-tag">Figma</span>
-            <span class="skill-tag">T.I</span>
-            <span class="skill-tag">JavaScript</span>
-          </div>
-
-          <div class="social-links">
-            <a
-              href="https://github.com/ryomensinuka"
-              target="_blank"
-              class="social-link"
-              aria-label="GitHub"
-            >
-              <span>🔗</span>
-            </a>
-            <a
-              href="https://www.linkedin.com/in/co-founderkronex69316397/"
-              target="_blank"
-              class="social-link"
-              aria-label="LinkedIn"
-            >
-              <span>💼</span>
-            </a>
-            <a
-              href="mailto:arthur.calebersilva@gmail.com"
-              class="social-link"
-              aria-label="Email"
-            >
-              <span>📧</span>
-            </a>
-          </div>
         </div>
 
-        <div class="about-card reveal">
-          <img
-            src="./assets/andre.jpg"
-            alt="André"
-            class="about-avatar"
-            width="120"
-            height="120"
-          />
-          <h3 class="about-name">André</h3>
-          <p class="about-role">Cybersecurity Aspirant • 15 anos</p>
-          <p class="about-bio">
-            Em constante evolução no desenvolvimento web, com foco especial em segurança do usuário. 
-            Atualmente explorando o mundo da programação enquanto desenvolve habilidades em cybersegurança
-          </p>
-
-          <div class="skill-tags">
-            <span class="skill-tag">JavaScript</span>
-            <span class="skill-tag">CSS3</span>
-            <span class="skill-tag">HTML5</span>
-            <span class="skill-tag">Cybersecurity</span>
-            <span class="skill-tag">Photoshop</span>
-          </div>
-
-          <div class="social-links">
-            <a
-              href="https://github.com/dracox463"
-              target="_blank"
-              class="social-link"
-              aria-label="GitHub"
-            >
-              <span>🔗</span>
-            </a>
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              class="social-link"
-              aria-label="LinkedIn"
-            >
-              <span>💼</span>
-            </a>
-            <a
-              href="mailto:andre@example.com"
-              class="social-link"
-              aria-label="Email"
-            >
-              <span>📧</span>
-            </a>
-          </div>
-        </div>
-
-        <div class="about-card reveal">
-          <img
-            src="./assets/pedro.jpg"
-            alt="Pedro Henrique"
-            class="about-avatar"
-            width="120"
-            height="120"
-          />
-          <h3 class="about-name">Pedro Henrique</h3>
-          <p class="about-role">Graphical Designer • 15 anos</p>
-          <p class="about-bio">
-            Designer gráfico focado em criar visuais impactantes e memoráveis.
-            Com habilidades em diversas ferramentas de design, transformo ideias
-            em arte visual que prende a atenção.
-          </p>
-
-          <div class="skill-tags">
-            <span class="skill-tag">Photoshop</span>
-            <span class="skill-tag">Figma</span>
-            <span class="skill-tag">UI/UX</span>
-          </div>
-
-          <div class="social-links">
-            <a
-              href="https://github.com"
-              target="_blank"
-              class="social-link"
-              aria-label="GitHub"
-            >
-              <span>🔗</span>
-            </a>
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              class="social-link"
-              aria-label="LinkedIn"
-            >
-              <span>💼</span>
-            </a>
-            <a
-              href="mailto:pedro@example.com"
-              class="social-link"
-              aria-label="Email"
-            >
-              <span>📧</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section class="section projects" id="projects">
-      <div class="section-header reveal">
-        <h2 class="section-title">Nossos Designs</h2>
-        <p class="section-subtitle">
-          Banners e artes gráficas que criamos com paixão e dedicação
-        </p>
-      </div>
-
-      <div class="projects-grid" id="projectsGrid"></div>
-    </section>
-
-    <!-- Skills Section -->
-    <section class="section" id="skills">
-      <div class="section-header reveal">
-        <h2 class="section-title">Skills & Tecnologias</h2>
-        <p class="section-subtitle">
-          Nosso arsenal técnico para criar soluções excepcionais
-        </p>
-      </div>
-
-      <div class="skills-grid">
-        <div class="skill-category reveal">
-          <h3 class="skill-category-title">
-            <span class="skill-category-icon">💻</span>
-            Frontend
-          </h3>
-          <div class="skill-items" id="frontendSkills"></div>
-        </div>
-
-        <div class="skill-category reveal">
-          <h3 class="skill-category-title">
-            <span class="skill-category-icon">🎨</span>
-            Design
-          </h3>
-          <div class="skill-items" id="designSkills"></div>
-        </div>
-
-        <div class="skill-category reveal">
-          <h3 class="skill-category-title">
-            <span class="skill-category-icon">🛠️</span>
-            Tools
-          </h3>
-          <div class="skill-items" id="toolsSkills"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Timeline Section -->
-    <section class="section timeline" id="timeline">
-      <div class="section-header reveal">
-        <h2 class="section-title">Nossa Jornada</h2>
-        <p class="section-subtitle">
-          De aprendizes curiosos a desenvolvedores profissionais
-        </p>
-      </div>
-
-      <div class="timeline-container">
-        <div class="timeline-line"></div>
-
-        <div class="timeline-item reveal">
-          <div class="timeline-content">
-            <div class="timeline-year">Abril de 2025</div>
-            <h3 class="timeline-title">Primeiras Linhas de Código</h3>
-            <p class="timeline-description">
-              Começamos nossa jornada no desenvolvimento web, aprendendo HTML,
-              CSS e JavaScript. Criamos nossos primeiros projetos e descobrimos
-              nossa paixão por programação.
+        <div class="about-grid">
+          <div class="about-card reveal">
+            <img
+              src="./assets/arthur.jpg"
+              alt="Arthur"
+              class="about-avatar"
+              width="120"
+              height="120"
+            />
+            <h3 class="about-name">Arthur</h3>
+            <p class="about-role">Full-Stack Developer • 15 anos</p>
+            <p class="about-bio">
+              Domino desenvolvimento web com foco em criar soluções escaláveis e
+              performáticas. Apaixonado
+              por resolver problemas complexos através da programação.
             </p>
-          </div>
-          <div class="timeline-dot"></div>
-        </div>
 
-        <div class="timeline-item reveal">
-          <div class="timeline-content">
-            <div class="timeline-year">Setembro de 2025</div>
-            <h3 class="timeline-title">Persistência e disciplina</h3>
-            <p class="timeline-description">
-              Não desistimos mesmo diante dos desafios. Estudamos diariamente
-              sem parar, mesmo que 2 Horas ou menos por dia.
-            </p>
-          </div>
-          <div class="timeline-dot"></div>
-        </div>
+            <div class="skill-tags">
+              <span class="skill-tag">HTML5</span>
+              <span class="skill-tag">CSS3</span>
+              <span class="skill-tag">After Effects</span>
+              <span class="skill-tag">Shell</span>
+              <span class="skill-tag">Figma</span>
+              <span class="skill-tag">T.I</span>
+              <span class="skill-tag">JavaScript</span>
+            </div>
 
-        <div class="timeline-item reveal">
-          <div class="timeline-content">
-            <div class="timeline-year">Novembro de 2025</div>
-            <h3 class="timeline-title">Foco e brainstorming</h3>
-            <p class="timeline-description">
-              Tivemos várias ideias, desde aplicativos até designs, mas nada nos
-              mantia perto o suficiente de fundarmos nossa empresa, que tanto
-              anseiavámos desde que iniciamos na carreira.
-            </p>
-          </div>
-          <div class="timeline-dot"></div>
-        </div>
-
-        <div class="timeline-item reveal">
-          <div class="timeline-content">
-            <div class="timeline-year">19/11/2025</div>
-            <h3 class="timeline-title">Elaboração do nome</h3>
-            <p class="timeline-description">
-              Elaboramos um nome que representasse nossa empresa, e que se
-              encaixasse com o nosso impacto na tecnologia.
-            </p>
-          </div>
-          <div class="timeline-dot"></div>
-        </div>
-
-        <div class="timeline-item reveal">
-          <div class="timeline-content">
-            <div class="timeline-year">2025</div>
-            <h3 class="timeline-title">Portfolio Profissional</h3>
-            <p class="timeline-description">
-              Lançamos nosso portfolio profissional e estamos prontos para novos
-              desafios. Buscamos oportunidades para crescer e contribuir com
-              projetos inovadores.
-            </p>
-          </div>
-          <div class="timeline-dot"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section class="section contact" id="contact">
-      <div class="section-header reveal">
-        <h2 class="section-title">Vamos criar algo incrível juntos?</h2>
-        <p class="section-subtitle">
-          Entre em contato e vamos transformar sua ideia em realidade
-        </p>
-      </div>
-
-      <div class="contact-container">
-        <div class="contact-info reveal">
-          <div class="contact-card">
-            <h3>💼 LinkedIn</h3>
-            <p>
-              Arthur:
-              <a
-                href="https://www.linkedin.com/in/co-founderkronex69316397/"
-                target="_blank"
-                style="color: var(--primary)"
-                >@co-founderkronex</a
-              >
-            </p>
-          </div>
-
-          <div class="contact-card">
-            <h3>🔗 GitHub</h3>
-            <p>
-              Arthur:
+            <div class="social-links">
               <a
                 href="https://github.com/ryomensinuka"
                 target="_blank"
-                style="color: var(--primary)"
-                >@ryomensinuka</a
+                class="social-link"
+                aria-label="GitHub"
               >
+                <span>🔗</span>
+              </a>
+              <a
+                href="https://www.linkedin.com/in/co-founderkronex69316397/"
+                target="_blank"
+                class="social-link"
+                aria-label="LinkedIn"
+              >
+                <span>💼</span>
+              </a>
+              <a
+                href="mailto:arthur.calebersilva@gmail.com"
+                class="social-link"
+                aria-label="Email"
+              >
+                <span>📧</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="about-card reveal">
+            <img
+              src="./assets/andre.jpg"
+              alt="André"
+              class="about-avatar"
+              width="120"
+              height="120"
+            />
+            <h3 class="about-name">André</h3>
+            <p class="about-role">Cybersecurity Aspirant • 15 anos</p>
+            <p class="about-bio">
+              Em constante evolução no desenvolvimento web, com foco especial em segurança do usuário. 
+              Atualmente explorando o mundo da programação enquanto desenvolve habilidades em cybersegurança
             </p>
-            <p>
-              André:
+
+            <div class="skill-tags">
+              <span class="skill-tag">JavaScript</span>
+              <span class="skill-tag">CSS3</span>
+              <span class="skill-tag">HTML5</span>
+              <span class="skill-tag">Cybersecurity</span>
+              <span class="skill-tag">Photoshop</span>
+            </div>
+
+            <div class="social-links">
               <a
                 href="https://github.com/dracox463"
                 target="_blank"
-                style="color: var(--primary)"
-                >@andre</a
+                class="social-link"
+                aria-label="GitHub"
               >
+                <span>🔗</span>
+              </a>
+              <a
+                href="https://linkedin.com"
+                target="_blank"
+                class="social-link"
+                aria-label="LinkedIn"
+              >
+                <span>💼</span>
+              </a>
+              <a
+                href="mailto:andre@example.com"
+                class="social-link"
+                aria-label="Email"
+              >
+                <span>📧</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="about-card reveal">
+            <img
+              src="./assets/pedro.jpg"
+              alt="Pedro Henrique"
+              class="about-avatar"
+              width="120"
+              height="120"
+            />
+            <h3 class="about-name">Pedro Henrique</h3>
+            <p class="about-role">Graphical Designer • 15 anos</p>
+            <p class="about-bio">
+              Designer gráfico focado em criar visuais impactantes e memoráveis.
+              Com habilidades em diversas ferramentas de design, transformo ideias
+              em arte visual que prende a atenção.
             </p>
+
+            <div class="skill-tags">
+              <span class="skill-tag">Photoshop</span>
+              <span class="skill-tag">Figma</span>
+              <span class="skill-tag">UI/UX</span>
+            </div>
+
+            <div class="social-links">
+              <a
+                href="https://github.com"
+                target="_blank"
+                class="social-link"
+                aria-label="GitHub"
+              >
+                <span>🔗</span>
+              </a>
+              <a
+                href="https://linkedin.com"
+                target="_blank"
+                class="social-link"
+                aria-label="LinkedIn"
+              >
+                <span>💼</span>
+              </a>
+              <a
+                href="mailto:pedro@example.com"
+                class="social-link"
+                aria-label="Email"
+              >
+                <span>📧</span>
+              </a>
+            </div>
           </div>
         </div>
+      </section>
 
-        <form class="contact-form reveal" id="contactForm">
-          <div class="form-success" id="formSuccess">
-            ✓ Mensagem enviada com sucesso! Entraremos em contato em breve.
+      <!-- Projects Section -->
+      <section class="section projects" id="projects">
+        <div class="section-header reveal">
+          <h2 class="section-title">Nossos Designs</h2>
+          <p class="section-subtitle">
+            Banners e artes gráficas que criamos com paixão e dedicação
+          </p>
+        </div>
+
+        <div class="projects-grid" id="projectsGrid">
+          <!-- Loading skeletons will be shown here temporarily -->
+          <div class="project-skeleton">
+            <div class="skeleton-image"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text short"></div>
+          </div>
+          <div class="project-skeleton">
+            <div class="skeleton-image"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text short"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Skills Section -->
+      <section class="section" id="skills">
+        <div class="section-header reveal">
+          <h2 class="section-title">Skills & Tecnologias</h2>
+          <p class="section-subtitle">
+            Nosso arsenal técnico para criar soluções excepcionais
+          </p>
+        </div>
+
+        <div class="skills-grid">
+          <div class="skill-category reveal">
+            <h3 class="skill-category-title">
+              <span class="skill-category-icon">💻</span>
+              Frontend
+            </h3>
+            <div class="skill-items" id="frontendSkills"></div>
           </div>
 
-          <div class="form-group">
-            <label for="name">Nome *</label>
-            <input type="text" id="name" name="name" required />
-            <span class="form-error">Por favor, digite seu nome</span>
+          <div class="skill-category reveal">
+            <h3 class="skill-category-title">
+              <span class="skill-category-icon">🎨</span>
+              Design
+            </h3>
+            <div class="skill-items" id="designSkills"></div>
           </div>
 
-          <div class="form-group">
-            <label for="email">Email *</label>
-            <input type="email" id="email" name="email" required />
-            <span class="form-error">Por favor, digite um email válido</span>
+          <div class="skill-category reveal">
+            <h3 class="skill-category-title">
+              <span class="skill-category-icon">🛠️</span>
+              Tools
+            </h3>
+            <div class="skill-items" id="toolsSkills"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Timeline Section -->
+      <section class="section timeline" id="timeline">
+        <div class="section-header reveal">
+          <h2 class="section-title">Nossa Jornada</h2>
+          <p class="section-subtitle">
+            De aprendizes curiosos a desenvolvedores profissionais
+          </p>
+        </div>
+
+        <div class="timeline-container">
+          <div class="timeline-line"></div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-content">
+              <div class="timeline-year">Abril de 2025</div>
+              <h3 class="timeline-title">Primeiras Linhas de Código</h3>
+              <p class="timeline-description">
+                Começamos nossa jornada no desenvolvimento web, aprendendo HTML,
+                CSS e JavaScript. Criamos nossos primeiros projetos e descobrimos
+                nossa paixão por programação.
+              </p>
+            </div>
+            <div class="timeline-dot"></div>
           </div>
 
-          <div class="form-group">
-            <label for="subject">Assunto *</label>
-            <select id="subject" name="subject" required>
-              <option value="">Selecione um assunto</option>
-              <option value="project">Novo Projeto</option>
-              <option value="freelance">Trabalho Freelance</option>
-              <option value="collaboration">Colaboração</option>
-              <option value="other">Outro</option>
-            </select>
-            <span class="form-error">Por favor, selecione um assunto</span>
+          <div class="timeline-item reveal">
+            <div class="timeline-content">
+              <div class="timeline-year">Setembro de 2025</div>
+              <h3 class="timeline-title">Persistência e disciplina</h3>
+              <p class="timeline-description">
+                Não desistimos mesmo diante dos desafios. Estudamos diariamente
+                sem parar, mesmo que 2 Horas ou menos por dia.
+              </p>
+            </div>
+            <div class="timeline-dot"></div>
           </div>
 
-          <div class="form-group">
-            <label for="message">Mensagem *</label>
-            <textarea id="message" name="message" required></textarea>
-            <span class="form-error">Por favor, digite sua mensagem</span>
+          <div class="timeline-item reveal">
+            <div class="timeline-content">
+              <div class="timeline-year">Novembro de 2025</div>
+              <h3 class="timeline-title">Foco e brainstorming</h3>
+              <p class="timeline-description">
+                Tivemos várias ideias, desde aplicativos até designs, mas nada nos
+                mantia perto o suficiente de fundarmos nossa empresa, que tanto
+                anseiavámos desde que iniciamos na carreira.
+              </p>
+            </div>
+            <div class="timeline-dot"></div>
           </div>
 
-          <button type="submit" class="btn btn-primary btn-submit">
-            Enviar Mensagem
-          </button>
-        </form>
-      </div>
-    </section>
+          <div class="timeline-item reveal">
+            <div class="timeline-content">
+              <div class="timeline-year">19/11/2025</div>
+              <h3 class="timeline-title">Elaboração do nome</h3>
+              <p class="timeline-description">
+                Elaboramos um nome que representasse nossa empresa, e que se
+                encaixasse com o nosso impacto na tecnologia.
+              </p>
+            </div>
+            <div class="timeline-dot"></div>
+          </div>
+
+          <div class="timeline-item reveal">
+            <div class="timeline-content">
+              <div class="timeline-year">2025</div>
+              <h3 class="timeline-title">Portfolio Profissional</h3>
+              <p class="timeline-description">
+                Lançamos nosso portfolio profissional e estamos prontos para novos
+                desafios. Buscamos oportunidades para crescer e contribuir com
+                projetos inovadores.
+              </p>
+            </div>
+            <div class="timeline-dot"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact Section -->
+      <section class="section contact" id="contact">
+        <div class="section-header reveal">
+          <h2 class="section-title">Vamos criar algo incrível juntos?</h2>
+          <p class="section-subtitle">
+            Entre em contato e vamos transformar sua ideia em realidade
+          </p>
+        </div>
+
+        <div class="contact-container">
+          <div class="contact-info reveal">
+            <div class="contact-card">
+              <h3>💼 LinkedIn</h3>
+              <p>
+                Arthur:
+                <a
+                  href="https://www.linkedin.com/in/co-founderkronex69316397/"
+                  target="_blank"
+                  style="color: var(--primary)"
+                  >@co-founderkronex</a
+                >
+              </p>
+            </div>
+
+            <div class="contact-card">
+              <h3>🔗 GitHub</h3>
+              <p>
+                Arthur:
+                <a
+                  href="https://github.com/ryomensinuka"
+                  target="_blank"
+                  style="color: var(--primary)"
+                  >@ryomensinuka</a
+                >
+              </p>
+              <p>
+                André:
+                <a
+                  href="https://github.com/dracox463"
+                  target="_blank"
+                  style="color: var(--primary)"
+                  >@andre</a
+                >
+              </p>
+            </div>
+          </div>
+
+          <form class="contact-form reveal" id="contactForm">
+            <div class="form-success" id="formSuccess">
+              ✓ Mensagem enviada com sucesso! Entraremos em contato em breve.
+            </div>
+
+            <div class="form-group">
+              <label for="name">Nome *</label>
+              <input type="text" id="name" name="name" required />
+              <span class="form-error">Por favor, digite seu nome</span>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input type="email" id="email" name="email" required />
+              <span class="form-error">Por favor, digite um email válido</span>
+            </div>
+
+            <div class="form-group">
+              <label for="subject">Assunto *</label>
+              <select id="subject" name="subject" required>
+                <option value="">Selecione um assunto</option>
+                <option value="project">Novo Projeto</option>
+                <option value="freelance">Trabalho Freelance</option>
+                <option value="collaboration">Colaboração</option>
+                <option value="other">Outro</option>
+              </select>
+              <span class="form-error">Por favor, selecione um assunto</span>
+            </div>
+
+            <div class="form-group">
+              <label for="message">Mensagem *</label>
+              <textarea id="message" name="message" required></textarea>
+              <span class="form-error">Por favor, digite sua mensagem</span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-submit">
+              Enviar Mensagem
+            </button>
+          </form>
+        </div>
+      </section>
+    </main>
 
     <!-- Footer -->
     <footer>
@@ -1996,7 +2126,7 @@
       };
 
       // ═══════════════════════════════════════════════════════════════
-      // THEME TOGGLE
+      // THEME TOGGLE WITH SMOOTH TRANSITION
       // ═══════════════════════════════════════════════════════════════
 
       const themeToggle = document.getElementById("themeToggle");
@@ -2007,14 +2137,50 @@
       htmlElement.setAttribute("data-theme", savedTheme);
       themeToggle.textContent = savedTheme === "dark" ? "🌙" : "☀️";
 
-      themeToggle.addEventListener("click", () => {
+      function toggleTheme() {
         const currentTheme = htmlElement.getAttribute("data-theme");
         const newTheme = currentTheme === "dark" ? "light" : "dark";
-
+        
+        // Add transition for smooth theme change
+        document.body.style.transition = 'background-color 0.5s ease, color 0.5s ease';
+        
         htmlElement.setAttribute("data-theme", newTheme);
         localStorage.setItem("theme", newTheme);
         themeToggle.textContent = newTheme === "dark" ? "🌙" : "☀️";
-      });
+        
+        // Remove transition after animation completes
+        setTimeout(() => {
+          document.body.style.transition = '';
+        }, 500);
+      }
+
+      themeToggle.addEventListener("click", toggleTheme);
+
+      // ═══════════════════════════════════════════════════════════════
+      // ACTIVE NAVIGATION LINK
+      // ═══════════════════════════════════════════════════════════════
+
+      function setActiveNavLink() {
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-links a');
+        
+        let currentSection = '';
+        
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop - 100;
+          const sectionHeight = section.clientHeight;
+          if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
+            currentSection = section.getAttribute('id');
+          }
+        });
+
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === `#${currentSection}`) {
+            link.classList.add('active');
+          }
+        });
+      }
 
       // ═══════════════════════════════════════════════════════════════
       // MOBILE MENU TOGGLE
@@ -2052,7 +2218,19 @@
         scrollProgress.style.width = progress + "%";
       }
 
-      window.addEventListener("scroll", updateScrollProgress);
+      // Throttle scroll events for better performance
+      function throttle(func, limit) {
+        let inThrottle;
+        return function (...args) {
+          if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => (inThrottle = false), limit);
+          }
+        };
+      }
+
+      window.addEventListener("scroll", throttle(updateScrollProgress, 10));
 
       // ═══════════════════════════════════════════════════════════════
       // NAVBAR SCROLL EFFECT
@@ -2066,6 +2244,7 @@
         } else {
           navbar.classList.remove("scrolled");
         }
+        setActiveNavLink();
       });
 
       // ═══════════════════════════════════════════════════════════════
@@ -2179,6 +2358,7 @@
       const projectsGrid = document.getElementById("projectsGrid");
 
       function renderProjects() {
+        // Clear loading skeletons
         projectsGrid.innerHTML = "";
 
         projects.forEach((project, index) => {
@@ -2229,7 +2409,8 @@
         observeElements();
       }
 
-      renderProjects();
+      // Simulate loading delay for better UX
+      setTimeout(renderProjects, 1000);
 
       // ═══════════════════════════════════════════════════════════════
       // RENDER SKILLS
@@ -2292,27 +2473,50 @@
       const contactForm = document.getElementById("contactForm");
       const formSuccess = document.getElementById("formSuccess");
 
-      function validateEmail(email) {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(email);
+      // Enhanced form validation
+      const formFields = {
+        name: {
+          validate: (value) => value.trim().length >= 2,
+          message: "Nome deve ter pelo menos 2 caracteres"
+        },
+        email: {
+          validate: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+          message: "Digite um email válido"
+        },
+        subject: {
+          validate: (value) => value !== "",
+          message: "Por favor, selecione um assunto"
+        },
+        message: {
+          validate: (value) => value.trim().length >= 10,
+          message: "Mensagem deve ter pelo menos 10 caracteres"
+        }
+      };
+
+      function validateField(fieldName, value) {
+        const field = formFields[fieldName];
+        return field ? field.validate(value) : true;
+      }
+
+      function getFieldMessage(fieldName) {
+        const field = formFields[fieldName];
+        return field ? field.message : "Campo inválido";
       }
 
       function validateForm() {
         let isValid = true;
-        const formGroups = contactForm.querySelectorAll(".form-group");
+        const formData = new FormData(contactForm);
 
-        formGroups.forEach((group) => {
-          const input = group.querySelector("input, select, textarea");
-          group.classList.remove("error");
+        for (let [fieldName, value] of formData) {
+          const formGroup = contactForm.querySelector(`[name="${fieldName}"]`).closest('.form-group');
+          formGroup.classList.remove('error');
 
-          if (!input.value.trim()) {
-            group.classList.add("error");
-            isValid = false;
-          } else if (input.type === "email" && !validateEmail(input.value)) {
-            group.classList.add("error");
+          if (!validateField(fieldName, value)) {
+            formGroup.classList.add('error');
+            formGroup.querySelector('.form-error').textContent = getFieldMessage(fieldName);
             isValid = false;
           }
-        });
+        }
 
         return isValid;
       }
@@ -2339,25 +2543,32 @@
         }
       });
 
-      // Real-time validation
+      // Enhanced real-time validation
       contactForm
         .querySelectorAll("input, select, textarea")
         .forEach((input) => {
           input.addEventListener("blur", () => {
             const formGroup = input.closest(".form-group");
+            const fieldName = input.name;
+            const value = input.value;
+
             formGroup.classList.remove("error");
 
-            if (!input.value.trim()) {
+            if (!validateField(fieldName, value)) {
               formGroup.classList.add("error");
-            } else if (input.type === "email" && !validateEmail(input.value)) {
-              formGroup.classList.add("error");
+              formGroup.querySelector('.form-error').textContent = getFieldMessage(fieldName);
             }
           });
 
           input.addEventListener("input", () => {
             const formGroup = input.closest(".form-group");
-            if (formGroup.classList.contains("error") && input.value.trim()) {
-              formGroup.classList.remove("error");
+            if (formGroup.classList.contains("error")) {
+              const fieldName = input.name;
+              const value = input.value;
+              
+              if (validateField(fieldName, value)) {
+                formGroup.classList.remove("error");
+              }
             }
           });
         });
@@ -2490,38 +2701,9 @@
       }
 
       // ═══════════════════════════════════════════════════════════════
-      // PERFORMANCE OPTIMIZATION
+      // PERFORMANCE OPTIMIZATION - LAZY LOADING
       // ═══════════════════════════════════════════════════════════════
 
-      // Debounce function for scroll events
-      function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-          const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-          };
-          clearTimeout(timeout);
-          timeout = setTimeout(later, wait);
-        };
-      }
-
-      // Throttle function for high-frequency events
-      function throttle(func, limit) {
-        let inThrottle;
-        return function (...args) {
-          if (!inThrottle) {
-            func.apply(this, args);
-            inThrottle = true;
-            setTimeout(() => (inThrottle = false), limit);
-          }
-        };
-      }
-
-      // Apply throttle to scroll progress
-      window.addEventListener("scroll", throttle(updateScrollProgress, 10));
-
-      // Lazy load images
       if ("IntersectionObserver" in window) {
         const imageObserver = new IntersectionObserver((entries) => {
           entries.forEach((entry) => {
@@ -2542,7 +2724,7 @@
       }
 
       console.log(
-        "%c🚀 Luxor's Group - Portfolio v6.2",
+        "%c🚀 Luxor's Group - Portfolio v7.0",
         "font-size: 20px; font-weight: bold; color: #95aa61;"
       );
       console.log(
